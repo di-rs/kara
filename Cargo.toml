@@ -1,0 +1,9 @@
+[package]
+name = "hecto"
+version = "0.1.0"
+edition = "2024"
+description = "Text Editor Rust practice"
+license = "MIT"
+
+[dependencies]
+crossterm = "0.29.0"
