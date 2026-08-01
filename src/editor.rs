@@ -9,6 +9,9 @@ use terminal::Terminal;
 
 mod terminal;
 
+const NAME: &str = env!("CARGO_PKG_NAME");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub struct Editor {
     should_quit: bool,
 }
@@ -43,9 +46,10 @@ impl Editor {
 
         if self.should_quit {
             Terminal::clear_screen()?;
-            queue!(Print("Goodbye.\r\n"))?;
+            queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
         } else {
-            Self::draw_rows()?;
+            Self::draw_grid()?;
+            Self::draw_welcome()?;
             queue!(MoveTo(1, 0), BlinkingBlock)?;
         }
 
@@ -54,12 +58,27 @@ impl Editor {
         Ok(())
     }
 
-    fn draw_rows() -> Result<(), std::io::Error> {
+    fn draw_grid() -> Result<(), std::io::Error> {
+        use crossterm::terminal::{Clear, ClearType};
+        let size = Terminal::size()?;
+        for i in 0..size.height {
+            queue!(MoveTo(0, i), Clear(ClearType::CurrentLine), Print("~"))?;
+        }
+        Ok(())
+    }
+
+    fn draw_welcome() -> Result<(), std::io::Error> {
         let size = Terminal::size()?;
 
-        for i in 0..size.height {
-            queue!(MoveTo(0, i), Print("~"))?;
-        }
+        let mut welcome_message = format!("{NAME} v{VERSION}");
+        let message_len = u16::try_from(welcome_message.len()).unwrap_or_default();
+
+        let start_y = size.height / 3;
+        let start_x = size.width.saturating_sub(message_len - 1) / 2;
+
+        welcome_message.truncate(size.width.into());
+
+        queue!(MoveTo(start_x, start_y), Print(welcome_message))?;
 
         Ok(())
     }

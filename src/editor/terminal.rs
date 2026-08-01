@@ -50,10 +50,6 @@ impl Terminal {
         queue!(Clear(ClearType::All))
     }
 
-    pub fn clear_line() -> Result<()> {
-        queue!(Clear(ClearType::CurrentLine))
-    }
-
     pub fn move_cursor_to(position: Position) -> Result<()> {
         queue!(MoveTo(position.x, position.y))
     }
