@@ -24,8 +24,8 @@ pub struct TerminalSize {
 
 #[derive(Copy, Clone)]
 pub struct Position {
-    pub x: u16,
-    pub y: u16,
+    pub x: usize,
+    pub y: usize,
 }
 
 pub struct Terminal {}
@@ -51,7 +51,10 @@ impl Terminal {
     }
 
     pub fn move_cursor_to(position: Position) -> Result<()> {
-        queue!(MoveTo(position.x, position.y))
+        let x = u16::try_from(position.x).unwrap_or_default();
+        let y = u16::try_from(position.y).unwrap_or_default();
+
+        queue!(MoveTo(x, y))
     }
 
     pub fn size() -> Result<TerminalSize> {

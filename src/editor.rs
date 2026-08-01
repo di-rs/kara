@@ -1,31 +1,31 @@
 use crossterm::cursor::SetCursorStyle::BlinkingBlock;
 use crossterm::cursor::{Hide, MoveTo, Show};
-use crossterm::event::{Event, KeyEvent, KeyModifiers};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::event::{Event::Key, KeyCode::Char, read};
 use crossterm::style::Print;
 
 use crate::queue;
-use terminal::Terminal;
+use document::Document;
+use terminal::{Position, Terminal};
 
+mod document;
 mod terminal;
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+#[derive(Default)]
 pub struct Editor {
     should_quit: bool,
+    document: Document,
 }
 
 impl Editor {
-    pub const fn new() -> Self {
-        Self { should_quit: false }
-    }
-
     pub fn run(&mut self) {
-        Terminal::initialize().unwrap();
+        let _ = Terminal::initialize();
         let result = self.repl();
-        Terminal::terminate().unwrap();
-        result.unwrap();
+        let _ = Terminal::terminate();
+        let _ = result;
     }
 
     fn repl(&mut self) -> Result<(), std::io::Error> {
@@ -50,7 +50,13 @@ impl Editor {
         } else {
             Self::draw_grid()?;
             Self::draw_welcome()?;
-            queue!(MoveTo(1, 0), BlinkingBlock)?;
+
+            let location = self.document.caret_location();
+            Terminal::move_cursor_to(Position {
+                x: location.x,
+                y: location.y,
+            })?;
+            queue!(BlinkingBlock)?;
         }
 
         queue!(Show)?;
@@ -74,7 +80,7 @@ impl Editor {
         let message_len = u16::try_from(welcome_message.len()).unwrap_or_default();
 
         let start_y = size.height / 3;
-        let start_x = size.width.saturating_sub(message_len - 1) / 2;
+        let start_x = size.width.saturating_sub(message_len).saturating_sub(1) / 2;
 
         welcome_message.truncate(size.width.into());
 
@@ -85,18 +91,45 @@ impl Editor {
 
     fn evaluate_event(&mut self, event: &Event) {
         if let Key(KeyEvent {
-            code, modifiers, ..
+            code,
+            modifiers,
+            kind: KeyEventKind::Press,
+            ..
         }) = event
-            && *code == Char('q')
-            && *modifiers == KeyModifiers::CONTROL
         {
-            self.should_quit = true;
+            match *code {
+                Char('q') if *modifiers == KeyModifiers::CONTROL => {
+                    self.should_quit = true;
+                }
+                KeyCode::Up
+                | KeyCode::Down
+                | KeyCode::Left
+                | KeyCode::Down
+                | Char('j' | 'l' | 'i' | 'k')
+                    if *modifiers == KeyModifiers::NONE =>
+                {
+                    self.move_caret(*code);
+                }
+                _ => (),
+            }
         }
     }
-}
 
-impl Default for Editor {
-    fn default() -> Self {
-        Self::new()
+    fn move_caret(&mut self, code: KeyCode) {
+        match code {
+            KeyCode::Up | Char('i') => {
+                self.document.move_caret(document::Direction::Up(1));
+            }
+            KeyCode::Down | Char('k') => {
+                self.document.move_caret(document::Direction::Down(1));
+            }
+            KeyCode::Left | Char('j') => {
+                self.document.move_caret(document::Direction::Left(1));
+            }
+            KeyCode::Right | Char('l') => {
+                self.document.move_caret(document::Direction::Right(1));
+            }
+            _ => (),
+        }
     }
 }
