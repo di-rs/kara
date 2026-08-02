@@ -1,26 +1,27 @@
-use crossterm::{cursor::MoveTo, style::Print};
+use crate::editor::terminal::{Position, Terminal, TerminalSize};
+use buffer::Buffer;
 
-use crate::{
-    editor::terminal::{Terminal, TerminalSize},
-    queue,
-};
+mod buffer;
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub struct View {}
+#[derive(Default)]
+pub struct View {
+    buffer: Buffer,
+}
 
 impl View {
-    pub fn render() -> Result<(), std::io::Error> {
-        use crossterm::terminal::{Clear, ClearType};
-
+    pub fn render(&self) -> Result<(), std::io::Error> {
         let TerminalSize { height, .. } = Terminal::size()?;
 
         for i in 0..height {
-            queue!(MoveTo(0, i), Clear(ClearType::CurrentLine), Print("~"))?;
+            Terminal::move_to(Position { x: 0, y: i })?;
+            Terminal::clear_line()?;
 
-            if i == 0 {
-                queue!(Print(" Hello, World!"))?;
+            match self.buffer.line(i) {
+                Some(line) => Terminal::print(line)?,
+                None => Terminal::print("~")?,
             }
         }
 
@@ -34,14 +35,15 @@ impl View {
         let size = Terminal::size()?;
 
         let mut welcome_message = format!("{NAME} v{VERSION}");
-        let message_len = u16::try_from(welcome_message.len()).unwrap_or_default();
+        let message_len = welcome_message.len();
 
-        let start_y = size.height / 3;
-        let start_x = size.width.saturating_sub(message_len).saturating_sub(1) / 2;
+        let y = size.height / 3;
+        let x = size.width.saturating_sub(message_len).saturating_sub(1) / 2;
 
-        welcome_message.truncate(size.width.into());
+        welcome_message.truncate(size.width);
 
-        queue!(MoveTo(start_x, start_y), Print(welcome_message))?;
+        Terminal::move_to(Position { x, y })?;
+        Terminal::print(welcome_message)?;
 
         Ok(())
     }

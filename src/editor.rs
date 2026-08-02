@@ -17,6 +17,7 @@ mod view;
 pub struct Editor {
     should_quit: bool,
     document: Document,
+    view: View,
 }
 
 impl Editor {
@@ -47,10 +48,10 @@ impl Editor {
             Terminal::clear_screen()?;
             queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
         } else {
-            View::render()?;
+            self.view.render()?;
 
             let location = self.document.caret_location();
-            Terminal::move_cursor_to(Position {
+            Terminal::move_to(Position {
                 x: location.x,
                 y: location.y,
             })?;
