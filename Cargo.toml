@@ -1,10 +1,10 @@
 [package]
-name = "hecto"
+name = "kara"
 version = "0.1.0"
 edition = "2024"
 description = "Text Editor Rust practice"
 license = "MIT"
-repository = "git@github.com:di-rs/hecto.git"
+repository = "git@github.com:di-rs/kara.git"
 keywords = ["rust", "text-editor"]
 categories = ["pratice", "pet"]
 
