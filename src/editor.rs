@@ -7,12 +7,11 @@ use crossterm::style::Print;
 use crate::queue;
 use document::Document;
 use terminal::{Position, Terminal};
+use view::View;
 
 mod document;
 mod terminal;
-
-const NAME: &str = env!("CARGO_PKG_NAME");
-const VERSION: &str = env!("CARGO_PKG_VERSION");
+mod view;
 
 #[derive(Default)]
 pub struct Editor {
@@ -48,8 +47,7 @@ impl Editor {
             Terminal::clear_screen()?;
             queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
         } else {
-            Self::draw_grid()?;
-            Self::draw_welcome()?;
+            View::render()?;
 
             let location = self.document.caret_location();
             Terminal::move_cursor_to(Position {
@@ -61,31 +59,6 @@ impl Editor {
 
         queue!(Show)?;
         Terminal::execute()?;
-        Ok(())
-    }
-
-    fn draw_grid() -> Result<(), std::io::Error> {
-        use crossterm::terminal::{Clear, ClearType};
-        let size = Terminal::size()?;
-        for i in 0..size.height {
-            queue!(MoveTo(0, i), Clear(ClearType::CurrentLine), Print("~"))?;
-        }
-        Ok(())
-    }
-
-    fn draw_welcome() -> Result<(), std::io::Error> {
-        let size = Terminal::size()?;
-
-        let mut welcome_message = format!("{NAME} v{VERSION}");
-        let message_len = u16::try_from(welcome_message.len()).unwrap_or_default();
-
-        let start_y = size.height / 3;
-        let start_x = size.width.saturating_sub(message_len).saturating_sub(1) / 2;
-
-        welcome_message.truncate(size.width.into());
-
-        queue!(MoveTo(start_x, start_y), Print(welcome_message))?;
-
         Ok(())
     }
 
@@ -105,7 +78,7 @@ impl Editor {
                 | KeyCode::Down
                 | KeyCode::Left
                 | KeyCode::Down
-                | Char('j' | 'l' | 'i' | 'k')
+                | Char('j' | 'h' | 'u' | 'k')
                     if *modifiers == KeyModifiers::NONE =>
                 {
                     self.move_caret(*code);
@@ -117,16 +90,16 @@ impl Editor {
 
     fn move_caret(&mut self, code: KeyCode) {
         match code {
-            KeyCode::Up | Char('i') => {
+            KeyCode::Up | Char('u') => {
                 self.document.move_caret(document::Direction::Up(1));
             }
-            KeyCode::Down | Char('k') => {
+            KeyCode::Down | Char('j') => {
                 self.document.move_caret(document::Direction::Down(1));
             }
-            KeyCode::Left | Char('j') => {
+            KeyCode::Left | Char('h') => {
                 self.document.move_caret(document::Direction::Left(1));
             }
-            KeyCode::Right | Char('l') => {
+            KeyCode::Right | Char('k') => {
                 self.document.move_caret(document::Direction::Right(1));
             }
             _ => (),
