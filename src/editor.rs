@@ -5,27 +5,41 @@ use crossterm::event::{Event::Key, KeyCode::Char, read};
 use crossterm::style::Print;
 
 use crate::queue;
-use document::Document;
+use buffer::{Buffer, Direction};
 use terminal::{Position, Terminal};
 use view::View;
 
-mod document;
+mod buffer;
 mod terminal;
 mod view;
 
 #[derive(Default)]
 pub struct Editor {
     should_quit: bool,
-    document: Document,
-    view: View,
+    buffer: Buffer,
+    // view: View,
 }
 
 impl Editor {
-    pub fn run(&mut self) {
+    pub fn run(&mut self, file_name: Option<&String>) {
+        let current_hook = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |panic_info| {
+            let _ = Terminal::terminate();
+            current_hook(panic_info);
+        }));
+
         let _ = Terminal::initialize();
-        let result = self.repl();
-        let _ = Terminal::terminate();
-        let _ = result;
+
+        self.load_document(file_name);
+        let _ = self.repl();
+    }
+
+    fn load_document(&mut self, file_name: Option<&String>) {
+        if let Some(file_name) = file_name
+            && let Ok(loaded_doc) = Buffer::open(file_name)
+        {
+            self.buffer = loaded_doc;
+        }
     }
 
     fn repl(&mut self) -> Result<(), std::io::Error> {
@@ -48,9 +62,9 @@ impl Editor {
             Terminal::clear_screen()?;
             queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
         } else {
-            self.view.render()?;
+            View::render(&self.buffer)?;
 
-            let location = self.document.caret_location();
+            let location = self.buffer.caret_location();
             Terminal::move_to(Position {
                 x: location.x,
                 y: location.y,
@@ -92,16 +106,16 @@ impl Editor {
     fn move_caret(&mut self, code: KeyCode) {
         match code {
             KeyCode::Up | Char('u') => {
-                self.document.move_caret(document::Direction::Up(1));
+                self.buffer.move_caret(Direction::Up(1));
             }
             KeyCode::Down | Char('j') => {
-                self.document.move_caret(document::Direction::Down(1));
+                self.buffer.move_caret(Direction::Down(1));
             }
             KeyCode::Left | Char('h') => {
-                self.document.move_caret(document::Direction::Left(1));
+                self.buffer.move_caret(Direction::Left(1));
             }
             KeyCode::Right | Char('k') => {
-                self.document.move_caret(document::Direction::Right(1));
+                self.buffer.move_caret(Direction::Right(1));
             }
             _ => (),
         }

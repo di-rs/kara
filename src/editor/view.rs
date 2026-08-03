@@ -1,32 +1,31 @@
-use crate::editor::terminal::{Position, Terminal, TerminalSize};
-use buffer::Buffer;
-
-mod buffer;
+use crate::editor::{
+    buffer::Buffer,
+    terminal::{Position, Terminal, TerminalSize},
+};
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Default)]
-pub struct View {
-    buffer: Buffer,
-}
+pub struct View {}
 
 impl View {
-    pub fn render(&self) -> Result<(), std::io::Error> {
+    pub fn render(document: &Buffer) -> Result<(), std::io::Error> {
         let TerminalSize { height, .. } = Terminal::size()?;
 
         for i in 0..height {
             Terminal::move_to(Position { x: 0, y: i })?;
             Terminal::clear_line()?;
 
-            match self.buffer.line(i) {
+            match document.get_line(i) {
                 Some(line) => Terminal::print(line)?,
                 None => Terminal::print("~")?,
             }
         }
 
-        // Always drawing it for now
-        Self::draw_welcome_message()?;
+        if document.is_empty() {
+            Self::draw_welcome_message()?;
+        }
 
         Ok(())
     }
