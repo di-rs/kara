@@ -4,6 +4,7 @@ use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::event::{Event::Key, KeyCode::Char, read};
 use crossterm::style::Print;
 
+use crate::editor::terminal::Size;
 use crate::queue;
 use buffer::{Buffer, Direction};
 use terminal::{Position, Terminal};
@@ -17,7 +18,7 @@ mod view;
 pub struct Editor {
     should_quit: bool,
     buffer: Buffer,
-    // view: View,
+    view: View,
 }
 
 impl Editor {
@@ -55,14 +56,14 @@ impl Editor {
         Ok(())
     }
 
-    fn refresh_screen(&self) -> Result<(), std::io::Error> {
+    fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
         queue!(Hide)?;
 
         if self.should_quit {
             Terminal::clear_screen()?;
             queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
         } else {
-            View::render(&self.buffer)?;
+            self.view.render(&self.buffer)?;
 
             let location = self.buffer.caret_location();
             Terminal::move_to(Position {
@@ -78,28 +79,34 @@ impl Editor {
     }
 
     fn evaluate_event(&mut self, event: &Event) {
-        if let Key(KeyEvent {
-            code,
-            modifiers,
-            kind: KeyEventKind::Press,
-            ..
-        }) = event
-        {
-            match *code {
+        match event {
+            Key(KeyEvent {
+                code,
+                modifiers,
+                kind: KeyEventKind::Press,
+                ..
+            }) => match *code {
                 Char('q') if *modifiers == KeyModifiers::CONTROL => {
                     self.should_quit = true;
                 }
                 KeyCode::Up
                 | KeyCode::Down
                 | KeyCode::Left
-                | KeyCode::Down
+                | KeyCode::Right
                 | Char('j' | 'h' | 'u' | 'k')
                     if *modifiers == KeyModifiers::NONE =>
                 {
                     self.move_caret(*code);
                 }
                 _ => (),
+            },
+            Event::Resize(width, height) => {
+                self.view.resize(Size {
+                    height: (*height).into(),
+                    width: (*width).into(),
+                });
             }
+            _ => (),
         }
     }
 

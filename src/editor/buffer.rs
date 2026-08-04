@@ -1,4 +1,4 @@
-use std::cmp::min;
+use std::cmp::{max, min};
 
 mod line;
 use line::Line;
@@ -23,6 +23,7 @@ pub enum Direction {
 pub struct Buffer {
     lines: Vec<Line>,
     caret_location: Location,
+    max_prev_x: usize,
 }
 
 impl Buffer {
@@ -35,6 +36,7 @@ impl Buffer {
         Ok(Self {
             lines,
             caret_location: Location::default(),
+            max_prev_x: 0,
         })
     }
 
@@ -45,17 +47,20 @@ impl Buffer {
             Direction::Up(step) => {
                 self.caret_location.y = self.caret_location.y.saturating_sub(step);
                 let width = self.width_at(self.caret_location.y);
-                self.caret_location.x = min(width, self.caret_location.x);
+                self.max_prev_x = max(self.caret_location.x, self.max_prev_x);
+                self.caret_location.x = min(width, self.max_prev_x);
             }
             Direction::Down(step) => {
                 let new_y = self.caret_location.y.saturating_add(step);
                 self.caret_location.y = min(new_y, height);
                 let width = self.width_at(self.caret_location.y);
-                self.caret_location.x = min(width, self.caret_location.x);
+                self.max_prev_x = max(self.caret_location.x, self.max_prev_x);
+                self.caret_location.x = min(width, self.max_prev_x);
             }
             Direction::Left(step) => {
                 if self.caret_location.x > 0 {
                     self.caret_location.x = self.caret_location.x.saturating_sub(step);
+                    self.max_prev_x = self.caret_location.x;
                 } else if self.caret_location.y > 0 {
                     // recursive move up
                     self.move_caret(Direction::Up(1));
@@ -66,6 +71,7 @@ impl Buffer {
                 let width = self.width_at(self.caret_location.y);
                 if self.caret_location.x < width {
                     self.caret_location.x = self.caret_location.x.saturating_add(step);
+                    self.max_prev_x = self.caret_location.x;
                 } else if self.caret_location.y < height {
                     // recursive move down
                     self.move_caret(Direction::Down(1));

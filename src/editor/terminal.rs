@@ -18,8 +18,8 @@ macro_rules! queue {
     }}
 }
 
-#[derive(Clone, Copy)]
-pub struct TerminalSize {
+#[derive(Default, Clone, Copy)]
+pub struct Size {
     pub height: usize,
     pub width: usize,
 }
@@ -67,9 +67,9 @@ impl Terminal {
         queue!(Print(data))
     }
 
-    pub fn size() -> Result<TerminalSize> {
+    pub fn size() -> Result<Size> {
         let size = terminal::size()?;
-        Ok(TerminalSize {
+        Ok(Size {
             height: size.1.into(),
             width: size.0.into(),
         })
