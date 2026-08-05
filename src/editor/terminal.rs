@@ -1,6 +1,7 @@
-use crossterm::cursor::MoveTo;
+use crossterm::cursor::SetCursorStyle::BlinkingBlock;
+use crossterm::cursor::{Hide, MoveTo, Show};
 use crossterm::style::Print;
-use crossterm::terminal;
+use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};
 use std::fmt::Display;
 use std::io::{Write, stdout};
@@ -37,6 +38,7 @@ type Result<T> = std::result::Result<T, std::io::Error>;
 impl Terminal {
     pub fn initialize() -> Result<()> {
         enable_raw_mode()?;
+        Self::enter_alternate_screen()?;
         Self::clear_screen()?;
         Self::move_to(Position { x: 0, y: 0 })?;
         Self::execute()?;
@@ -44,8 +46,19 @@ impl Terminal {
     }
 
     pub fn terminate() -> Result<()> {
+        Self::leave_alternate_screen()?;
+        Self::show_caret()?;
         Self::execute()?;
-        disable_raw_mode()
+        disable_raw_mode()?;
+        Ok(())
+    }
+
+    fn enter_alternate_screen() -> Result<()> {
+        queue!(EnterAlternateScreen)
+    }
+
+    fn leave_alternate_screen() -> Result<()> {
+        queue!(LeaveAlternateScreen)
     }
 
     pub fn clear_screen() -> Result<()> {
@@ -63,8 +76,22 @@ impl Terminal {
         queue!(MoveTo(x, y))
     }
 
+    pub fn show_caret() -> Result<()> {
+        queue!(Show, BlinkingBlock)
+    }
+
+    pub fn hide_caret() -> Result<()> {
+        queue!(Hide)
+    }
+
     pub fn print(data: impl Display) -> Result<()> {
         queue!(Print(data))
+    }
+
+    pub fn print_row(row: usize, line_text: impl Display) -> Result<()> {
+        Self::move_to(Position { x: 0, y: row })?;
+        Self::clear_line()?;
+        Self::print(line_text)
     }
 
     pub fn size() -> Result<Size> {

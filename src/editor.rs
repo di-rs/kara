@@ -1,11 +1,7 @@
-use crossterm::cursor::SetCursorStyle::BlinkingBlock;
-use crossterm::cursor::{Hide, MoveTo, Show};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::event::{Event::Key, KeyCode::Char, read};
-use crossterm::style::Print;
 
 use crate::editor::terminal::Size;
-use crate::queue;
 use buffer::{Buffer, Direction};
 use terminal::{Position, Terminal};
 use view::View;
@@ -14,68 +10,65 @@ mod buffer;
 mod terminal;
 mod view;
 
-#[derive(Default)]
 pub struct Editor {
     should_quit: bool,
-    buffer: Buffer,
     view: View,
+    buffer: Buffer,
 }
 
 impl Editor {
-    pub fn run(&mut self, file_name: Option<&String>) {
+    pub fn builder() -> EditorBuilder {
+        EditorBuilder::default()
+    }
+
+    fn new(file_name: Option<String>) -> Result<Self, std::io::Error> {
         let current_hook = std::panic::take_hook();
         std::panic::set_hook(Box::new(move |panic_info| {
             let _ = Terminal::terminate();
             current_hook(panic_info);
         }));
 
-        let _ = Terminal::initialize();
+        Terminal::initialize()?;
+        let buffer = file_name
+            .and_then(|file_name| Buffer::open(&file_name).ok())
+            .unwrap_or_default();
 
-        self.load_document(file_name);
-        let _ = self.repl();
+        Ok(Self {
+            should_quit: false,
+            view: View::new(),
+            buffer,
+        })
     }
 
-    fn load_document(&mut self, file_name: Option<&String>) {
-        if let Some(file_name) = file_name
-            && let Ok(loaded_doc) = Buffer::open(file_name)
-        {
-            self.buffer = loaded_doc;
-        }
-    }
-
-    fn repl(&mut self) -> Result<(), std::io::Error> {
+    pub fn run(&mut self) {
         loop {
-            self.refresh_screen()?;
+            self.refresh_screen();
             if self.should_quit {
                 break;
             }
 
-            let event = read()?;
-            self.evaluate_event(&event);
+            match read() {
+                Ok(event) => self.evaluate_event(&event),
+                Err(err) => {
+                    debug_assert!(false, "Could not read event: {err:?}");
+                }
+            }
         }
-        Ok(())
     }
 
-    fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
-        queue!(Hide)?;
+    fn refresh_screen(&mut self) {
+        let _ = Terminal::hide_caret();
 
-        if self.should_quit {
-            Terminal::clear_screen()?;
-            queue!(MoveTo(0, 0), Print("Goodbye.\r\n"))?;
-        } else {
-            self.view.render(&self.buffer)?;
+        self.view.render(&self.buffer);
 
-            let location = self.buffer.caret_location();
-            Terminal::move_to(Position {
-                x: location.x,
-                y: location.y,
-            })?;
-            queue!(BlinkingBlock)?;
-        }
+        let location = self.buffer.caret_location();
+        let _ = Terminal::move_to(Position {
+            x: location.x,
+            y: location.y,
+        });
 
-        queue!(Show)?;
-        Terminal::execute()?;
-        Ok(())
+        let _ = Terminal::show_caret();
+        let _ = Terminal::execute();
     }
 
     fn evaluate_event(&mut self, event: &Event) {
@@ -126,5 +119,31 @@ impl Editor {
             }
             _ => (),
         }
+    }
+}
+
+impl Drop for Editor {
+    fn drop(&mut self) {
+        let _ = Terminal::terminate();
+        if self.should_quit {
+            let _ = Terminal::move_to(Position { x: 0, y: 0 });
+            let _ = Terminal::print("Goodbye.\r\n");
+        }
+    }
+}
+
+#[derive(Default)]
+pub struct EditorBuilder {
+    file_name: Option<String>,
+}
+
+impl EditorBuilder {
+    pub fn file(mut self, file_name: Option<&String>) -> Self {
+        self.file_name = file_name.cloned();
+        self
+    }
+
+    pub fn build(self) -> Result<Editor, std::io::Error> {
+        Editor::new(self.file_name)
     }
 }
