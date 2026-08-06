@@ -6,6 +6,8 @@ use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};
 use std::fmt::Display;
 use std::io::{Write, stdout};
 
+use crate::editor::{Position, Size};
+
 #[macro_export]
 macro_rules! queue {
     ($($command:expr),*) => {{
@@ -17,18 +19,6 @@ macro_rules! queue {
             $(.and_then(|writer| crossterm::QueueableCommand::queue(writer, $command)))*
             .map(|_| ())
     }}
-}
-
-#[derive(Default, Clone, Copy)]
-pub struct Size {
-    pub height: usize,
-    pub width: usize,
-}
-
-#[derive(Copy, Clone)]
-pub struct Position {
-    pub col: usize,
-    pub row: usize,
 }
 
 pub struct Terminal {}

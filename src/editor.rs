@@ -1,17 +1,17 @@
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use crossterm::event::{Event::Key, KeyCode::Char, read};
-
-use crate::editor::terminal::Size;
 use buffer::{Buffer, Direction};
-use terminal::{Position, Terminal};
+use crossterm::event::{Event, KeyEvent, KeyEventKind, read};
+use terminal::Terminal;
 use view::View;
 
 mod buffer;
+mod editorcommand;
 mod terminal;
 mod view;
 
 mod prelude;
 pub use prelude::*;
+
+use crate::editor::editorcommand::EditorCommand;
 
 pub struct Editor {
     should_quit: bool,
@@ -51,7 +51,7 @@ impl Editor {
             }
 
             match read() {
-                Ok(event) => self.evaluate_event(&event),
+                Ok(event) => self.evaluate_event(event),
                 Err(err) => {
                     debug_assert!(false, "Could not read event: {err:?}");
                 }
@@ -74,53 +74,60 @@ impl Editor {
         let _ = Terminal::execute();
     }
 
-    fn evaluate_event(&mut self, event: &Event) {
-        match event {
-            Key(KeyEvent {
-                code,
-                modifiers,
-                kind: KeyEventKind::Press,
-                ..
-            }) => match *code {
-                Char('q') if *modifiers == KeyModifiers::CONTROL => {
-                    self.should_quit = true;
+    fn evaluate_event(&mut self, event: Event) {
+        let should_process = match &event {
+            Event::Key(KeyEvent { kind, .. }) => kind == &KeyEventKind::Press,
+            Event::Resize(_, _) => true,
+            _ => false,
+        };
+
+        if should_process {
+            match EditorCommand::try_from(event) {
+                Ok(command) => self.handle_command(command),
+                Err(err) => {
+                    debug_assert!(false, "Could not handle command: {err}");
                 }
-                KeyCode::Up
-                | KeyCode::Down
-                | KeyCode::Left
-                | KeyCode::Right
-                | Char('j' | 'h' | 'u' | 'k')
-                    if *modifiers == KeyModifiers::NONE =>
-                {
-                    self.move_caret(*code);
-                }
-                _ => (),
-            },
-            Event::Resize(width, height) => {
-                self.view.resize(Size {
-                    height: (*height).into(),
-                    width: (*width).into(),
-                });
             }
-            _ => (),
         }
     }
 
-    fn move_caret(&mut self, code: KeyCode) {
-        match code {
-            KeyCode::Up | Char('u') => {
-                self.buffer.move_caret(Direction::Up(1));
+    fn handle_command(&mut self, command: EditorCommand) {
+        match command {
+            EditorCommand::Move(direction) => {
+                self.move_caret(&direction);
             }
-            KeyCode::Down | Char('j') => {
-                self.buffer.move_caret(Direction::Down(1));
+            EditorCommand::Resize(size) => {
+                self.view.resize(size);
             }
-            KeyCode::Left | Char('h') => {
-                self.buffer.move_caret(Direction::Left(1));
+            EditorCommand::Quit => {
+                self.should_quit = true;
             }
-            KeyCode::Right | Char('k') => {
-                self.buffer.move_caret(Direction::Right(1));
+            EditorCommand::UnknownEvent | EditorCommand::UnknownCode(_) => (),
+        }
+    }
+
+    fn move_caret(&mut self, direction: &editorcommand::Direction) {
+        use editorcommand::Direction::{
+            Down, End, Home, Left, LineEnd, LineStart, PageDown, PageUp, Right, Up,
+        };
+
+        match direction {
+            Up => self.buffer.move_caret(Direction::Up(1)),
+            Down => self.buffer.move_caret(Direction::Down(1)),
+            Left => self.buffer.move_caret(Direction::Left(1)),
+            Right => self.buffer.move_caret(Direction::Right(1)),
+            LineStart => self.buffer.move_caret(Direction::StartOfLine),
+            LineEnd => self.buffer.move_caret(Direction::EndOfLine),
+            Home => self.buffer.move_caret(Direction::StartOfBuffer),
+            End => self.buffer.move_caret(Direction::EndOfBuffer),
+            PageUp => {
+                let step = self.view.size.height / 2;
+                self.buffer.move_caret(Direction::Up(step));
             }
-            _ => (),
+            PageDown => {
+                let step = self.view.size.height / 2;
+                self.buffer.move_caret(Direction::Down(step));
+            }
         }
     }
 }

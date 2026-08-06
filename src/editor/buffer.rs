@@ -13,6 +13,8 @@ pub enum Direction {
     Right(usize),
     StartOfLine,
     EndOfLine,
+    StartOfBuffer,
+    EndOfBuffer,
 }
 
 #[derive(Default)]
@@ -75,11 +77,25 @@ impl Buffer {
                 }
             }
             Direction::StartOfLine => {
-                self.caret_location.x = 0;
+                if let Some(line) = self.get_line(self.caret_location.y) {
+                    let whitespace_count = line.prefix_whitespace_count();
+                    self.caret_location.x = whitespace_count;
+                } else {
+                    self.caret_location.x = 0;
+                }
+
+                self.max_prev_x = self.caret_location.x;
             }
             Direction::EndOfLine => {
                 let width = self.width_at(self.caret_location.y);
                 self.caret_location.x = width;
+                self.max_prev_x = self.caret_location.x;
+            }
+            Direction::StartOfBuffer => {
+                self.caret_location.y = 0;
+            }
+            Direction::EndOfBuffer => {
+                self.caret_location.y = self.lines.len().saturating_sub(1);
             }
         }
     }

@@ -1,4 +1,14 @@
-use crate::editor::terminal::Position;
+#[derive(Default, Clone, Copy)]
+pub struct Size {
+    pub height: usize,
+    pub width: usize,
+}
+
+#[derive(Copy, Clone)]
+pub struct Position {
+    pub col: usize,
+    pub row: usize,
+}
 
 #[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub struct Coordinate {

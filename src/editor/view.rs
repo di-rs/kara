@@ -1,21 +1,18 @@
 use std::fmt::Display;
 
-use crate::editor::{
-    Coordinate,
-    buffer::Buffer,
-    terminal::{Size, Terminal},
-};
+use crate::editor::{Coordinate, Size, buffer::Buffer, terminal::Terminal};
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct View {
     needs_redraw: bool,
-    size: Size,
+    pub size: Size,
     pub scroll_offset: Coordinate,
 }
 
 const Y_OVERSCAN: usize = 5;
+const X_OVERSCAN: usize = 5;
 
 impl View {
     pub fn new() -> Self {
@@ -84,11 +81,20 @@ impl View {
             offset_changed = true;
         }
 
-        if x < self.scroll_offset.x {
-            self.scroll_offset.x = x;
+        let start = self.scroll_offset.x.saturating_add(X_OVERSCAN);
+        let end = self
+            .scroll_offset
+            .x
+            .saturating_add(width)
+            .saturating_sub(X_OVERSCAN);
+
+        if self.scroll_offset.x > 0 && x < start {
+            self.scroll_offset.x = x.saturating_sub(X_OVERSCAN);
             offset_changed = true;
-        } else if x >= self.scroll_offset.x.saturating_add(width) {
-            self.scroll_offset.x = x.saturating_sub(width).saturating_add(1);
+        } else if x >= end {
+            self.scroll_offset.x = x
+                .saturating_sub(width.saturating_sub(X_OVERSCAN))
+                .saturating_add(1);
             offset_changed = true;
         }
 
