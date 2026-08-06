@@ -10,6 +10,9 @@ mod buffer;
 mod terminal;
 mod view;
 
+mod prelude;
+pub use prelude::*;
+
 pub struct Editor {
     should_quit: bool,
     view: View,
@@ -59,13 +62,13 @@ impl Editor {
     fn refresh_screen(&mut self) {
         let _ = Terminal::hide_caret();
 
+        let caret_location = self.buffer.caret_location();
+
+        self.view.scroll_into_view(caret_location);
         self.view.render(&self.buffer);
 
-        let location = self.buffer.caret_location();
-        let _ = Terminal::move_to(Position {
-            x: location.x,
-            y: location.y,
-        });
+        let location = caret_location.subtract(self.view.scroll_offset);
+        let _ = Terminal::move_to(location.into());
 
         let _ = Terminal::show_caret();
         let _ = Terminal::execute();
@@ -126,7 +129,7 @@ impl Drop for Editor {
     fn drop(&mut self) {
         let _ = Terminal::terminate();
         if self.should_quit {
-            let _ = Terminal::move_to(Position { x: 0, y: 0 });
+            let _ = Terminal::move_to(Position { col: 0, row: 0 });
             let _ = Terminal::print("Goodbye.\r\n");
         }
     }

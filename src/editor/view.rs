@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use crate::editor::{
+    Coordinate,
     buffer::Buffer,
     terminal::{Size, Terminal},
 };
@@ -11,13 +12,17 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub struct View {
     needs_redraw: bool,
     size: Size,
+    pub scroll_offset: Coordinate,
 }
+
+const Y_OVERSCAN: usize = 5;
 
 impl View {
     pub fn new() -> Self {
         Self {
             needs_redraw: true,
             size: Terminal::size().unwrap_or_default(),
+            scroll_offset: Coordinate::default(),
         }
     }
 
@@ -30,20 +35,20 @@ impl View {
         if !self.needs_redraw {
             return;
         }
+
         let Size { height, width } = self.size;
         if height == 0 || width == 0 {
             return;
         }
 
+        let top = self.scroll_offset.y;
+
         for i in 0..height {
-            match buffer.get_line(i) {
+            match buffer.get_line(i.saturating_add(top)) {
                 Some(line) => {
-                    let truncated_line = if line.len() >= width {
-                        &line.chars().take(width).collect()
-                    } else {
-                        line
-                    };
-                    Self::render_line(i, truncated_line);
+                    let left = self.scroll_offset.x;
+                    let right = self.scroll_offset.x.saturating_add(width);
+                    Self::render_line(i, line.get(left..right));
                 }
                 None => Self::render_line(i, "~"),
             }
@@ -54,6 +59,40 @@ impl View {
         }
 
         self.needs_redraw = false;
+    }
+
+    pub const fn scroll_into_view(&mut self, current_location: Coordinate) {
+        let Size { height, width } = self.size;
+        let Coordinate { x, y } = current_location;
+
+        let mut offset_changed = false;
+
+        let top = self.scroll_offset.y.saturating_add(Y_OVERSCAN);
+        let bottom = self
+            .scroll_offset
+            .y
+            .saturating_add(height)
+            .saturating_sub(Y_OVERSCAN);
+
+        if self.scroll_offset.y > 0 && y < top {
+            self.scroll_offset.y = y.saturating_sub(Y_OVERSCAN);
+            offset_changed = true;
+        } else if y >= bottom {
+            self.scroll_offset.y = y
+                .saturating_sub(height.saturating_sub(Y_OVERSCAN))
+                .saturating_add(1);
+            offset_changed = true;
+        }
+
+        if x < self.scroll_offset.x {
+            self.scroll_offset.x = x;
+            offset_changed = true;
+        } else if x >= self.scroll_offset.x.saturating_add(width) {
+            self.scroll_offset.x = x.saturating_sub(width).saturating_add(1);
+            offset_changed = true;
+        }
+
+        self.needs_redraw = self.needs_redraw || offset_changed;
     }
 
     fn render_line(at: usize, line_text: impl Display) {

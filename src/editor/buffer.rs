@@ -3,11 +3,7 @@ use std::cmp::{max, min};
 mod line;
 use line::Line;
 
-#[derive(Default, Clone, Copy)]
-pub struct Location {
-    pub x: usize,
-    pub y: usize,
-}
+use crate::editor::Coordinate;
 
 #[derive(Clone, Copy)]
 pub enum Direction {
@@ -22,7 +18,7 @@ pub enum Direction {
 #[derive(Default)]
 pub struct Buffer {
     lines: Vec<Line>,
-    caret_location: Location,
+    caret_location: Coordinate,
     max_prev_x: usize,
 }
 
@@ -35,7 +31,7 @@ impl Buffer {
         }
         Ok(Self {
             lines,
-            caret_location: Location::default(),
+            caret_location: Coordinate::default(),
             max_prev_x: 0,
         })
     }
@@ -92,7 +88,7 @@ impl Buffer {
         self.lines.get(at).map_or(0, Line::len)
     }
 
-    pub const fn caret_location(&self) -> Location {
+    pub const fn caret_location(&self) -> Coordinate {
         self.caret_location
     }
 
@@ -100,7 +96,7 @@ impl Buffer {
         self.lines.is_empty()
     }
 
-    pub fn get_line(&self, idx: usize) -> Option<&String> {
-        self.lines.get(idx).map(|l| &l.inner)
+    pub fn get_line(&self, idx: usize) -> Option<&Line> {
+        self.lines.get(idx)
     }
 }

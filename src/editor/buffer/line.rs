@@ -1,10 +1,19 @@
+use std::{cmp::min, ops::Range};
+
 pub struct Line {
-    pub inner: String,
+    inner: String,
 }
 
 impl Line {
     pub const fn len(&self) -> usize {
         self.inner.len()
+    }
+
+    pub fn get(&self, range: Range<usize>) -> String {
+        let start = range.start;
+        let end = min(range.end, self.len());
+
+        self.inner.get(start..end).unwrap_or_default().to_string()
     }
 }
 

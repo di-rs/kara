@@ -27,8 +27,8 @@ pub struct Size {
 
 #[derive(Copy, Clone)]
 pub struct Position {
-    pub x: usize,
-    pub y: usize,
+    pub col: usize,
+    pub row: usize,
 }
 
 pub struct Terminal {}
@@ -40,7 +40,7 @@ impl Terminal {
         enable_raw_mode()?;
         Self::enter_alternate_screen()?;
         Self::clear_screen()?;
-        Self::move_to(Position { x: 0, y: 0 })?;
+        Self::move_to(Position { col: 0, row: 0 })?;
         Self::execute()?;
         Ok(())
     }
@@ -70,8 +70,8 @@ impl Terminal {
     }
 
     pub fn move_to(position: Position) -> Result<()> {
-        let x = u16::try_from(position.x).unwrap_or(u16::MAX);
-        let y = u16::try_from(position.y).unwrap_or(u16::MAX);
+        let x = u16::try_from(position.col).unwrap_or(u16::MAX);
+        let y = u16::try_from(position.row).unwrap_or(u16::MAX);
 
         queue!(MoveTo(x, y))
     }
@@ -89,7 +89,7 @@ impl Terminal {
     }
 
     pub fn print_row(row: usize, line_text: impl Display) -> Result<()> {
-        Self::move_to(Position { x: 0, y: row })?;
+        Self::move_to(Position { col: 0, row })?;
         Self::clear_line()?;
         Self::print(line_text)
     }
