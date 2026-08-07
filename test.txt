@@ -24,19 +24,26 @@ l̴̛̘ā̵̹b̸͚̒o̸̰̚r̷̞̃e̸̙͐ ̶̘̑è̴̪t̷̯̑ ̸̳̓d̵̜̊ŏ̵�
 # Wide:
 ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ End of Line, scroll until here
 
-# Ambiguous:
-👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋 End of Line, scroll until here
-🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿 End of Line, scroll until here
+# Testing regular text
+Hello, world! This is a test.
 
-# Narrow:
-Lörëm ípsüm dólör sït âmét, cönsëctetur âdïpïscïng élit.  End of Line, scroll until here
-Sëd dö ēiusmód tēmpör ïncïdïdünt üt lâborë ēt dölöre mägnä äliquä. End of Line, scroll until here
-L̶̯̈́ö̶͕r̸̝͂e̷̗͆m̸̻̍ ̶̯̊i̵̘͋p̷̪̉s̵̨̒u̷̯̓m̷͕̆ ̸͈͠d̵͈̔ô̷̞ḷ̷̀ö̴̪r̴̍͜ ̵̜͗s̸̲̑ȋ̴ͅt̵̢̄ ̵͛͜a̶̬͛m̶̫̃ě̸̼t̵̯̿,̶͍͐ ̷̢́c̴͈̈o̷͖̕n̶͖͆s̴͓̽ē̷̙t̵͓͊e̴̪̒t̴̺͝u̷̫̐r̵̳̒ ̶̓͜s̶̙̑a̵̠͒d̷̟̚i̵͎̎p̸͈̉ṡ̷̤c̶̳͒i̷̺̐n̷̘͆ģ̵͘ ̵̡̿ẽ̷̼l̴̗͝i̵̗̋t̸̲͋r̷̘̿,̸͓̐ ̷̦̀ś̴͙ȩ̸͒ḑ̸̇ ̶̰̍d̶̝̾i̶̙̾a̴̩̕m̴̥͝ ̷̨͐n̶̩͗ȏ̴̩n̵̆͜ů̷͎m̸̫͊y̷̛͉ ̸̺̊ë̵͚́ḯ̶̻r̵͔̒m̷̪͑ö̴̢́d̶͉͐ ̸̤͊t̶͈̊ḛ̴̛ṁ̴̼p̷̠̌o̸͇̓ŕ̵̠ ̶̫͠í̸̧ṋ̷̈v̸̘̈́i̴̹̿d̶̙͗u̵̪̾n̷̤̅t̷̬͗ ̴͎̈ù̸̳t̶͓͝ ̵̭̾ End of Line, scroll until here
-l̴̛̘ā̵̹b̸͚̒o̸̰̚r̷̞̃e̸̙͐ ̶̘̑è̴̪t̷̯̑ ̸̳̓d̵̜̊ŏ̵̲l̵͇̾o̵̘̾r̵̦̀e̴̡͗ ̴̛̖m̸̨͑a̸̜̓g̶̘̊ṇ̴̀ã̸̹ ̵̬̃â̶̭l̷̳͘į̷̓q̶͈̀u̴͉̽y̸̜̾a̵͕͝m̷͍̍ ̴̼̔é̶̲ŗ̵̛ä̷̯t̶̯̄,̵̹̄ ̴̡͘ş̴̉e̵̬̊d̵̯̆ ̵̤̀d̶͎͘i̷̦͗a̵̭̐m̷̲͝ ̶͋͜v̸̪̈́ỏ̸͖l̷̜̎ǘ̸̞p̴̩͐ṫ̴͓ǘ̵̞a̵͛͜.̸̞̔ ̸̬͌A̷̡̓t̶̬̒ ̵̰͠v̸̜̕e̸̟̚r̷̝̉o̵̞̚ ̷̯̏ē̴̹ö̵͉́s̶̻͝ ̵̝̈́e̸̬̓t̴̥͂ ̷̧̏å̸̢c̸̚͜c̸͉̾ǘ̴̺s̸̱͠a̷̤͊m̶͈̒ ̷̙̂ė̸̡t̵̙̾ ̸͈̀j̴̼̊ü̵͖s̸͈̽t̶̤͊ó̶̼ ̷̹̔d̴̬͋ú̴̦o̶͓͊ ̶̭͝d̷̰͛ö̷͍́l̵̺̾ǒ̵̤r̸̫̎e̵̼̔s End of Line, scroll until here
+# Testing tabs
+Here	is	a	tab	separated	line.
 
-# Wide:
-ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ End of Line, scroll until here
+# Testing visible and invisible whitespace
+Non-breaking space and zero-width​space.
 
-# Ambiguous:
-👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋👋 End of Line, scroll until here
-🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿 End of Line, scroll until here
+# Testing control characters
+Control characters: [Escape][Bell]
+
+# Testing Compound Emojis
+Family emoji: 👨‍👩‍👧‍👦
+
+# Testing wide characters
+全角文字
+
+# Testing combined characters
+Combining: é (e with acute accent)
+
+# Testing regular symbols
+Symbols: ␣ (open box), ▯ (white vertical rectangle)
