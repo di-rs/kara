@@ -59,8 +59,39 @@ impl View {
     }
 
     pub const fn scroll_into_view(&mut self, current_location: Coordinate) {
-        let Size { height, width } = self.size;
         let Coordinate { x, y } = current_location;
+
+        self.scroll_vertically(y);
+        self.scroll_horizontally(x);
+    }
+
+    const fn scroll_horizontally(&mut self, to: usize) {
+        let Size { width, .. } = self.size;
+
+        let mut offset_changed = false;
+
+        let start = self.scroll_offset.x.saturating_add(X_OVERSCAN);
+        let end = self
+            .scroll_offset
+            .x
+            .saturating_add(width)
+            .saturating_sub(X_OVERSCAN);
+
+        if self.scroll_offset.x > 0 && to < start {
+            self.scroll_offset.x = to.saturating_sub(X_OVERSCAN);
+            offset_changed = true;
+        } else if to >= end {
+            self.scroll_offset.x = to
+                .saturating_sub(width.saturating_sub(X_OVERSCAN))
+                .saturating_add(1);
+            offset_changed = true;
+        }
+
+        self.needs_redraw = self.needs_redraw || offset_changed;
+    }
+
+    const fn scroll_vertically(&mut self, to: usize) {
+        let Size { height, .. } = self.size;
 
         let mut offset_changed = false;
 
@@ -71,39 +102,17 @@ impl View {
             .saturating_add(height)
             .saturating_sub(Y_OVERSCAN);
 
-        if self.scroll_offset.y > 0 && y < top {
-            self.scroll_offset.y = y.saturating_sub(Y_OVERSCAN);
+        if self.scroll_offset.y > 0 && to < top {
+            self.scroll_offset.y = to.saturating_sub(Y_OVERSCAN);
             offset_changed = true;
-        } else if y >= bottom {
-            self.scroll_offset.y = y
+        } else if to >= bottom {
+            self.scroll_offset.y = to
                 .saturating_sub(height.saturating_sub(Y_OVERSCAN))
                 .saturating_add(1);
             offset_changed = true;
         }
 
-        let start = self.scroll_offset.x.saturating_add(X_OVERSCAN);
-        let end = self
-            .scroll_offset
-            .x
-            .saturating_add(width)
-            .saturating_sub(X_OVERSCAN);
-
-        if self.scroll_offset.x > 0 && x < start {
-            self.scroll_offset.x = x.saturating_sub(X_OVERSCAN);
-            offset_changed = true;
-        } else if x >= end {
-            self.scroll_offset.x = x
-                .saturating_sub(width.saturating_sub(X_OVERSCAN))
-                .saturating_add(1);
-            offset_changed = true;
-        }
-
         self.needs_redraw = self.needs_redraw || offset_changed;
-    }
-
-    fn render_line(at: usize, line_text: impl Display) {
-        let result = Terminal::print_row(at, line_text);
-        debug_assert!(result.is_ok(), "Failed to render line");
     }
 
     fn draw_welcome_message(&self) {
@@ -119,5 +128,10 @@ impl View {
         message.truncate(width);
 
         Self::render_line(y, message);
+    }
+
+    fn render_line(at: usize, line_text: impl Display) {
+        let result = Terminal::print_row(at, line_text);
+        debug_assert!(result.is_ok(), "Failed to render line");
     }
 }

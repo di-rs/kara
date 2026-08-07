@@ -24,7 +24,7 @@ pub enum EditorCommand {
     Resize(Size),
     Quit,
     UnknownEvent,
-    UnknownCode(KeyCode),
+    UnknownCode,
 }
 
 impl TryFrom<Event> for EditorCommand {
@@ -46,7 +46,7 @@ impl TryFrom<Event> for EditorCommand {
                 (Char('G'), _) => Ok(Self::Move(Direction::End)),
                 (Char('p'), _) => Ok(Self::Move(Direction::PageUp)),
                 (Char('P'), _) => Ok(Self::Move(Direction::PageDown)),
-                _ => Ok(Self::UnknownCode(code)),
+                _ => Ok(Self::UnknownCode),
             },
             Event::Resize(width, height) => Ok(Self::Resize(Size {
                 height: height.into(),

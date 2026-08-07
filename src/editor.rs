@@ -67,7 +67,7 @@ impl Editor {
         self.view.scroll_into_view(caret_location);
         self.view.render(&self.buffer);
 
-        let location = caret_location.subtract(self.view.scroll_offset);
+        let location = caret_location.saturation_sub(self.view.scroll_offset);
         let _ = Terminal::move_to(location.into());
 
         let _ = Terminal::show_caret();
@@ -102,7 +102,7 @@ impl Editor {
             EditorCommand::Quit => {
                 self.should_quit = true;
             }
-            EditorCommand::UnknownEvent | EditorCommand::UnknownCode(_) => (),
+            EditorCommand::UnknownEvent | EditorCommand::UnknownCode => (),
         }
     }
 
